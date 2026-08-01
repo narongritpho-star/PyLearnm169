@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyLearn M.1 | ระบบฝึกเขียนโปรแกรม Python วิทยาการคำนวณ ม.1</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    
+    <!-- Babel Standalone for JSX compilation in browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Skulpt Python Interpreter CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+
+    <!-- Kanit Font for Modern Thai Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+        code, textarea, pre {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const IconCode2 = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>;
+        const IconPlay = () => <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>;
+        const IconCheckCircle = () => <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
+        const IconXCircle = () => <svg className="w-5 h-5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>;
+        const IconUserCheck = () => <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>;
+        const IconUsers = () => <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>;
+        const IconPlus = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"/></svg>;
+        const IconEdit = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>;
+        const IconTrash = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>;
+        const IconSettings = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>;
+        const IconBookOpen = () => <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>;
+        const IconAward = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V6a2 2 0 10-2 2h2zm0 0H4.5A2.5 2.5 0 002 10.5v2.25C2 14.1 3.1 15 4.5 15H12m0-7h7.5A2.5 2.5 0 0122 10.5v2.25c0 1.35-1.1 2.25-2.5 2.25H12"/></svg>;
+        const IconChevronRight = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/></svg>;
+        const IconLogOut = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>;
+        const IconSearch = () => <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>;
+        const IconFilter = () => <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>;
+        const IconUpload = () => <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>;
+        const IconLock = () => <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>;
+
+        const PYTHON_LESSONS = [
+          {
+            id: 1,
+            title: "1. การแสดงผลด้วย print()",
+            level: "พื้นฐาน 1",
+            description: "เรียนรู้การใช้คำสั่ง print() เพื่อแสดงข้อความออกทางหน้าจอ",
+            task: "ให้นักเรียนเขียนคำสั่ง print() เพื่อแสดงข้อความว่า 'Hello Python'",
+            initialCode: "# เขียนคำสั่งแสดงข้อความด้านล่างนี้\n",
+            expectedOutput: "Hello Python",
+            hint: "ใช้คำสั่ง print('Hello Python')"
+          },
+          {
+            id: 2,
+            title: "2. ตัวแปรและชนิดข้อมูล (Variables)",
+            level: "พื้นฐาน 2",
+            description: "การสร้างตัวแปรเพื่อเก็บข้อมูลตัวเลขและข้อความ",
+            task: "สร้างตัวแปรชื่อ name เก็บชื่อของคุณ และสร้างตัวแปร age เก็บอายุ แล้วใช้ print() แสดงค่า name",
+            initialCode: "# สร้างตัวแปร name และ age\nname = 'Somchai'\nage = 13\n\n# แสดงผลค่า name\n",
+            expectedOutput: "Somchai",
+            hint: "พิมพ์ print(name)"
+          },
+          {
+            id: 3,
+            title: "3. การคำนวณทางคณิตศาสตร์",
+            level: "พื้นฐาน 3",
+            description: "ตัวดำเนินการ บวก (+) ลบ (-) คูณ (*) หาร (/)",
+            task: "กำหนดให้ a = 15 และ b = 5 ให้เขียนโค้ดหาผลคูณของ a และ b แล้วแสดงผลลัพธ์",
+            initialCode: "a = 15\nb = 5\n# คำนวณผลคูณและแสดงผล\n",
+            expectedOutput: "75",
+            hint: "ใช้ print(a * b)"
+          },
+          {
+            id: 4,
+            title: "4. การรับค่าและการแปลงประเภทข้อมูล",
+            level: "ปานกลาง 1",
+            description: "การใช้ตัวแปรตัวเลขและแปลงประเภทข้อมูลด้วย int()",
+            task: "สร้างตัวแปร x = int('10') และ y = int('20') แล้วใช้ print() แสดงผลรวมของ x + y",
+            initialCode: "x = int('10')\ny = int('20')\n# คำนวณผลรวม x + y แล้วแสดงผล\n",
+            expectedOutput: "30",
+            hint: "print(x + y)"
+          },
+          {
+            id: 5,
+            title: "5. การตัดสินใจด้วย if-else",
+            level: "ปานกลาง 2",
+            description: "การตรวจสอบเงื่อนไข ถ้าคะแนนตั้งแต่ 50 ขึ้นไป ให้แสดง 'Pass'",
+            task: "กำหนด score = 65 ให้เขียนเงื่อนไข if-else ถ้า score >= 50 ให้แสดง 'Pass' ถ้าไม่ใช่แสดง 'Fail'",
+            initialCode: "score = 65\n# เขียนเงื่อนไข if-else ด้านล่าง\nif score >= 50:\n    print('Pass')\nelse:\n    print('Fail')",
+            expectedOutput: "Pass",
+            hint: "ตรวจสอบการเว้นวรรค (Indent) หลังคำสั่ง if และ else"
+          },
+          {
+            id: 6,
+            title: "6. การทำงานซ้ำด้วย for loop",
+            level: "ท้าทาย",
+            description: "การใช้คำสั่ง for ร่วมกับ range() ในการวนลูป",
+            task: "เขียนคำสั่งวนลูปแสดงตัวเลข 0 ถึง 4 ออกมาทีละบรรทัดด้วย range(5)",
+            initialCode: "# เขียนคำสั่ง for loop ด้วย range(5)\n",
+            expectedOutput: "0\n1\n2\n3\n4",
+            hint: "ใช้ for i in range(5): แล้วตามด้วย print(i)"
+          }
+        ];
+
+        const INITIAL_STUDENTS = [
+          { id: "10001", name: "เด็กชายกิตติศักดิ์ มีสุข", room: "ม.1/1", number: 1 },
+          { id: "10002", name: "เด็กหญิงจินตนา รักดี", room: "ม.1/1", number: 2 },
+          { id: "10003", name: "เด็กชายณัฐพงษ์ เรียนเก่ง", room: "ม.1/1", number: 3 },
+          { id: "10004", name: "เด็กหญิงธนพร ขยันเพียร", room: "ม.1/2", number: 1 },
+          { id: "10005", name: "เด็กชายปวินท์ สุขเสริฐ", room: "ม.1/2", number: 2 },
+          { id: "10006", name: "เด็กหญิงศุภิสรา ปัญญาดี", room: "ม.1/3", number: 1 },
+        ];
+
+        function App() {
+          const [currentRole, setCurrentRole] = React.useState('student-login'); 
+          const [studentIdInput, setStudentIdInput] = React.useState('');
+          const [currentStudent, setCurrentStudent] = React.useState(null);
+          
+          // Teacher PIN Auth State
+          const [showPinModal, setShowPinModal] = React.useState(false);
+          const [teacherPinInput, setTeacherPinInput] = React.useState('');
+
+          // App Data
+          const [students, setStudents] = React.useState(INITIAL_STUDENTS);
+          const [selectedLesson, setSelectedLesson] = React.useState(PYTHON_LESSONS[0]);
+          const [userCode, setUserCode] = React.useState(PYTHON_LESSONS[0].initialCode);
+          const [codeOutput, setCodeOutput] = React.useState('');
+          const [isRunning, setIsRunning] = React.useState(false);
+          const [testResult, setTestResult] = React.useState(null); 
+          const [submissions, setSubmissions] = React.useState([]);
+
+          // Teacher Settings & Bulk Import
+          const [gasUrl, setGasUrl] = React.useState('');
+          const [selectedRoomFilter, setSelectedRoomFilter] = React.useState('ALL');
+          const [searchStudentTerm, setSearchStudentTerm] = React.useState('');
+          
+          const [showStudentModal, setShowStudentModal] = React.useState(false);
+          const [editingStudent, setEditingStudent] = React.useState(null);
+          const [studentFormData, setStudentFormData] = React.useState({ id: '', name: '', room: 'ม.1/1', number: '' });
+          
+          const [showBulkModal, setShowBulkModal] = React.useState(false);
+          const [bulkInputText, setBulkInputText] = React.useState('');
+
+          const [showGasModal, setShowGasModal] = React.useState(false);
+          const [toast, setToast] = React.useState(null);
+
+          const showToast = (msg, type = 'info') => {
+            setToast({ msg, type });
+            setTimeout(() => setToast(null), 3500);
+          };
+
+          const handleTeacherPinSubmit = (e) => {
+            e.preventDefault();
+            if (teacherPinInput === '2495') {
+              setCurrentRole('teacher');
+              setShowPinModal(false);
+              setTeacherPinInput('');
+              showToast("เข้าสู่แดชบอร์ดผู้สอนสำเร็จ", "success");
+            } else {
+              showToast("รหัสผ่านผู้สอน ไม่ถูกต้อง!", "error");
+              setTeacherPinInput('');
+            }
+          };
+
+          const handleBulkImport = () => {
+            if (!bulkInputText.trim()) {
+              showToast("กรุณากรอกข้อมูลนักเรียนที่ต้องการนำเข้า", "warning");
+              return;
+            }
+
+            const lines = bulkInputText.split('\n');
+            let addedCount = 0;
+            let skippedCount = 0;
+            const updatedStudents = [...students];
+
+            lines.forEach(line => {
+              const trimmed = line.trim();
+              if (!trimmed) return;
+
+              let parts = trimmed.split(/,|\t/);
+              if (parts.length < 4) {
+                parts = trimmed.split(/\s+/);
+              }
+
+              if (parts.length >= 5) {
+                const id = parts[0].trim();
+                const firstName = parts[1].trim();
+                const lastName = parts[2].trim();
+                const room = parts[3].trim();
+                const num = parseInt(parts[4].trim(), 10) || 1;
+                const fullName = `${firstName} ${lastName}`;
+
+                if (id && !updatedStudents.some(s => s.id === id)) {
+                  updatedStudents.push({ id, name: fullName, room, number: num });
+                  addedCount++;
+                } else {
+                  skippedCount++;
+                }
+              } else if (parts.length === 4) {
+                const id = parts[0].trim();
+                const fullName = parts[1].trim();
+                const room = parts[2].trim();
+                const num = parseInt(parts[3].trim(), 10) || 1;
+
+                if (id && !updatedStudents.some(s => s.id === id)) {
+                  updatedStudents.push({ id, name: fullName, room, number: num });
+                  addedCount++;
+                } else {
+                  skippedCount++;
+                }
+              }
+            });
+
+            setStudents(updatedStudents);
+            setShowBulkModal(false);
+            setBulkInputText('');
+            showToast(`นำเข้าข้อมูลนักเรียนสำเร็จ ${addedCount} คน (ซ้ำ/ไม่ถูกต้อง ${skippedCount} คน)`, "success");
+          };
+
+          React.useEffect(() => {
+            if (selectedLesson) {
+              setUserCode(selectedLesson.initialCode);
+              setCodeOutput('');
+              setTestResult(null);
+            }
+          }, [selectedLesson]);
+
+          const runPython = async () => {
+            setIsRunning(true);
+            setCodeOutput('');
+            setTestResult(null);
+
+            let outputAccumulator = '';
+
+            const builtinRead = (x) => {
+              if (window.Sk.builtinFiles === undefined || window.Sk.builtinFiles["files"][x] === undefined) {
+                throw "File not found: '" + x + "'";
+              }
+              return window.Sk.builtinFiles["files"][x];
+            };
+
+            if (window.Sk) {
+              window.Sk.configure({
+                output: (text) => {
+                  outputAccumulator += text;
+                  setCodeOutput((prev) => prev + text);
+                },
+                read: builtinRead,
+                execLimit: 5000 
+              });
+
+              try {
+                await window.Sk.misceval.asyncToPromise(() => {
+                  return window.Sk.importMainWithBody("<stdin>", false, userCode, true);
+                });
+
+                const cleanedOutput = outputAccumulator.trim();
+                const expected = selectedLesson.expectedOutput.trim();
+
+                if (cleanedOutput === expected) {
+                  setTestResult({ success: true, message: "🎉 ถูกต้อง! ยินดีด้วยคุณผ่านโจทย์ข้อนี้แล้ว" });
+                } else {
+                  setTestResult({ 
+                    success: false, 
+                    message: `ผลลัพธ์ยังไม่ตรงกับโจทย์\n• ผลลัพธ์ของคุณ: "${cleanedOutput}"\n• ผลลัพธ์ที่ต้องการ: "${expected}"` 
+                  });
+                }
+              } catch (err) {
+                const errorMsg = err.toString();
+                setCodeOutput((prev) => prev + "\n[Error] " + errorMsg);
+                setTestResult({ success: false, message: "เกิดข้อผิดพลาดไวยากรณ์ (Syntax Error) ในโค้ด Python" });
+              } finally {
+                setIsRunning(false);
+              }
+            } else {
+              setCodeOutput("กำลังโหลดระบบรันโค้ด Python กรุณารอครู่หนึ่ง...");
+              setIsRunning(false);
+            }
+          };
+
+          const handleSubmitCode = async () => {
+            if (!currentStudent) return;
+            if (!testResult || !testResult.success) {
+              showToast("กรุณารันโค้ดและตรวจคำตอบให้ถูกต้องก่อนส่งงาน", "warning");
+              return;
+            }
+
+            const newSubmission = {
+              timestamp: new Date().toLocaleString('th-TH'),
+              studentId: currentStudent.id,
+              studentName: currentStudent.name,
+              room: currentStudent.room,
+              lessonId: selectedLesson.id,
+              lessonTitle: selectedLesson.title,
+              code: userCode,
+              status: "ผ่าน"
+            };
+
+            setSubmissions((prev) => [newSubmission, ...prev]);
+            showToast("บันทึกการส่งงานสำเร็จเรียบร้อย!", "success");
+
+            if (gasUrl.trim()) {
+              try {
+                await fetch(gasUrl, {
+                  method: 'POST',
+                  mode: 'no-cors',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(newSubmission)
+                });
+                showToast("ส่งข้อมูลไปยัง Google Sheet เรียบร้อยแล้วแบบ Realtime", "success");
+              } catch (error) {
+                console.error("Google Sheet Sync Error:", error);
+                showToast("ส่งเข้า Sheet ไม่สำเร็จ ตรวจสอบ URL Web App", "error");
+              }
+            }
+          };
+
+          const handleStudentLogin = (e) => {
+            e.preventDefault();
+            const cleanId = studentIdInput.trim();
+            if (cleanId.length !== 5) {
+              showToast("กรุณากรอกรหัสประจำตัวนักเรียน 5 หลัก", "error");
+              return;
+            }
+
+            const found = students.find((s) => s.id === cleanId);
+            if (found) {
+              setCurrentStudent(found);
+              setCurrentRole('student');
+              showToast(`ยินดีต้อนรับ ${found.name} (${found.room})`, "success");
+            } else {
+              showToast("ไม่พบรหัสนักเรียนนี้ในระบบ กรุณาติดต่อครูผู้สอน", "error");
+            }
+          };
+
+          const handleSaveStudent = () => {
+            if (!studentFormData.id || !studentFormData.name || !studentFormData.room) {
+              showToast("กรุณากรอกข้อมูลให้ครบถ้วน", "warning");
+              return;
+            }
+
+            if (editingStudent) {
+              setStudents(students.map(s => s.id === editingStudent.id ? { ...studentFormData, number: Number(studentFormData.number) } : s));
+              showToast("แก้ไขข้อมูลนักเรียนเรียบร้อย", "success");
+            } else {
+              if (students.some(s => s.id === studentFormData.id)) {
+                showToast("รหัสนักเรียนนี้มีในระบบแล้ว", "error");
+                return;
+              }
+              setStudents([...students, { ...studentFormData, number: Number(studentFormData.number) }]);
+              showToast("เพิ่มนักเรียนใหม่เรียบร้อย", "success");
+            }
+
+            setShowStudentModal(false);
+            setEditingStudent(null);
+            setStudentFormData({ id: '', name: '', room: 'ม.1/1', number: '' });
+          };
+
+          const handleDeleteStudent = (id) => {
+            if (confirm("คุณต้องการลบข้อมูลนักเรียนคนนี้ใช่หรือไม่?")) {
+              setStudents(students.filter(s => s.id !== id));
+              showToast("ลบข้อมูลนักเรียนเรียบร้อย", "info");
+            }
+          };
+
+          const filteredStudents = React.useMemo(() => {
+            return students.filter(s => {
+              const matchRoom = selectedRoomFilter === 'ALL' || s.room === selectedRoomFilter;
+              const matchSearch = s.name.includes(searchStudentTerm) || s.id.includes(searchStudentTerm);
+              return matchRoom && matchSearch;
+            });
+          }, [students, selectedRoomFilter, searchStudentTerm]);
+
+          const roomList = React.useMemo(() => {
+            const rooms = Array.from(new Set(students.map(s => s.room)));
+            return rooms.sort();
+          }, [students]);
+
+          return (
+            <div className="min-h-screen bg-slate-900 text-slate-100 font-sans flex flex-col">
+              {/* Toast Notification */}
+              {toast && (
+                <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-2xl text-white font-medium flex items-center gap-2 transition-all transform animate-bounce ${
+                  toast.type === 'success' ? 'bg-emerald-600 border border-emerald-400' :
+                  toast.type === 'error' ? 'bg-rose-600 border border-rose-400' :
+                  toast.type === 'warning' ? 'bg-amber-600 border border-amber-400' : 'bg-blue-600 border border-blue-400'
+                }`}>
+                  <span>{toast.msg}</span>
+                </div>
+              )}
+
+              {/* Navigation Header */}
+              <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-40 px-4 md:px-8 py-3.5 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-gradient-to-tr from-indigo-500 to-cyan-400 p-2.5 rounded-xl text-slate-950 font-bold shadow-lg">
+                    <IconCode2 />
+                  </div>
+                  <div>
+                    <h1 className="font-bold text-lg md:text-xl leading-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-sky-300 to-emerald-400">
+                      PyLearn M.1 | วิทยาการคำนวณ
+                    </h1>
+                    <p className="text-xs text-slate-400">ระบบฝึกเขียนโปรแกรม Python สำหรับชั้นมัธยมศึกษาปีที่ 1</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {currentRole === 'student' && currentStudent && (
+                    <div className="flex items-center gap-3 bg-slate-800/90 px-3.5 py-1.5 rounded-xl border border-slate-700 text-sm">
+                      <IconUserCheck />
+                      <div>
+                        <span className="font-medium text-emerald-300">{currentStudent.name}</span>
+                        <span className="text-xs text-slate-400 ml-2">({currentStudent.room} เลขที่ {currentStudent.number})</span>
+                      </div>
+                      <button 
+                        onClick={() => { setCurrentRole('student-login'); setCurrentStudent(null); }}
+                        className="text-slate-400 hover:text-rose-400 ml-2 p-1 transition"
+                        title="ออกจากระบบ"
+                      >
+                        <IconLogOut />
+                      </button>
+                    </div>
+                  )}
+
+                  {currentRole !== 'teacher' ? (
+                    <button
+                      onClick={() => setShowPinModal(true)}
+                      className="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs px-3.5 py-2 rounded-xl border border-slate-700 flex items-center gap-1.5 transition font-medium shadow-sm"
+                    >
+                      <IconUsers />
+                      แดชบอร์ดผู้สอน
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setCurrentRole('student-login')}
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3.5 py-2 rounded-xl font-medium flex items-center gap-1.5 transition shadow-lg"
+                    >
+                      <IconBookOpen />
+                      เข้าเรียนสำหรับนักเรียน
+                    </button>
+                  )}
+                </div>
+              </header>
+
+              {/* Main Workspace Area */}
+              <main className="flex-1 p-4 md:p-6 max-w-7xl w-full mx-auto">
+                
+                {/* STUDENT LOGIN SCREEN */}
+                {currentRole === 'student-login' && (
+                  <div className="max-w-md mx-auto my-12 bg-slate-800/60 border border-slate-700/60 p-8 rounded-2xl shadow-2xl backdrop-blur">
+                    <div className="text-center mb-6">
+                      <div className="w-16 h-16 bg-indigo-500/10 text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-3 border border-indigo-500/20">
+                        <IconCode2 />
+                      </div>
+                      <h2 className="text-xl font-bold text-white">เข้าสู่ระบบการเรียน Python</h2>
+                      <p className="text-sm text-slate-400 mt-1">กรอกรหัสประจำตัวนักเรียน 5 หลักเพื่อเริ่มฝึกฝน</p>
+                    </div>
+
+                    <form onSubmit={handleStudentLogin} className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-300 mb-1">รหัสประจำตัวนักเรียน (5 หลัก)</label>
+                        <input
+                          type="text"
+                          maxLength={5}
+                          value={studentIdInput}
+                          onChange={(e) => setStudentIdInput(e.target.value.replace(/\D/g, ''))}
+                          placeholder="เช่น 10001"
+                          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-center text-2xl tracking-widest font-mono text-emerald-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          required
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        className="w-full bg-gradient-to-r from-indigo-500 to-sky-500 hover:from-indigo-600 hover:to-sky-600 text-white font-semibold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2"
+                      >
+                        <span>เข้าสู่บทเรียน</span>
+                        <IconChevronRight />
+                      </button>
+                    </form>
+
+                    <div className="mt-6 pt-6 border-t border-slate-700/50 text-center">
+                      <p className="text-xs text-slate-400">ทดสอบรหัสนักเรียนตัวอย่าง: <span className="text-indigo-400 font-mono">10001, 10002, 10004</span></p>
+                    </div>
+                  </div>
+                )}
+
+                {/* STUDENT LEARNING ENVIRONMENT */}
+                {}
+                {currentRole === 'student' && (
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    
+                    {/* Sidebar Lessons List */}
+                    <div className="lg:col-span-4 space-y-3">
+                      <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4">
+                        <h2 className="text-sm font-bold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                          <IconBookOpen />
+                          บทเรียน Python ม.1
+                        </h2>
+
+                        <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-1">
+                          {PYTHON_LESSONS.map((lesson) => {
+                            const isSelected = selectedLesson.id === lesson.id;
+                            const isPassed = submissions.some(s => s.studentId === currentStudent?.id && s.lessonId === lesson.id && s.status === 'ผ่าน');
+
+                            return (
+                              <button
+                                key={lesson.id}
+                                onClick={() => setSelectedLesson(lesson)}
+                                className={`w-full text-left p-3 rounded-xl border transition flex items-start justify-between gap-2 ${
+                                  isSelected 
+                                    ? 'bg-indigo-600/20 border-indigo-500/60 text-white shadow-md' 
+                                    : 'bg-slate-900/40 border-slate-800 text-slate-300 hover:bg-slate-800/60'
+                                }`}
+                              >
+                                <div>
+                                  <div className="text-xs font-semibold text-indigo-400 mb-0.5">{lesson.level}</div>
+                                  <div className="font-medium text-sm leading-snug">{lesson.title}</div>
+                                </div>
+
+                                {isPassed && <IconCheckCircle />}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Main Code Workspace */}
+                    <div className="lg:col-span-8 space-y-4">
+                      
+                      {/* Task Description Card */}
+                      <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-5">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="bg-indigo-500/20 text-indigo-300 text-xs px-2.5 py-1 rounded-md font-semibold border border-indigo-500/30">
+                            {selectedLesson.level}
+                          </span>
+                          <span className="text-xs text-slate-400">บทเรียนที่ {selectedLesson.id} จาก {PYTHON_LESSONS.length}</span>
+                        </div>
+
+                        <h3 className="text-lg font-bold text-white mb-1">{selectedLesson.title}</h3>
+                        <p className="text-sm text-slate-300 mb-3">{selectedLesson.description}</p>
+                        
+                        <div className="bg-slate-900/80 border border-slate-700/80 rounded-xl p-3.5 text-sm">
+                          <span className="font-semibold text-emerald-400 block mb-1">🎯 โจทย์ที่ต้องทำ:</span>
+                          <p className="text-slate-200">{selectedLesson.task}</p>
+                        </div>
+                      </div>
+
+                      {/* Code Editor & Execution Panel */}
+                      <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
+                            <IconCode2 />
+                            Python Code Editor
+                          </span>
+
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={runPython}
+                              disabled={isRunning}
+                              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow transition disabled:opacity-50"
+                            >
+                              <IconPlay />
+                              {isRunning ? 'กำลังรันโค้ด...' : 'รันโค้ด (Run)'}
+                            </button>
+
+                            <button
+                              onClick={handleSubmitCode}
+                              disabled={!testResult || !testResult.success}
+                              className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium px-3.5 py-2 rounded-xl flex items-center gap-1.5 shadow transition disabled:opacity-40"
+                            >
+                              <IconAward />
+                              ส่งคำตอบ
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Editor Area */}
+                        <textarea
+                          value={userCode}
+                          onChange={(e) => setUserCode(e.target.value)}
+                          placeholder="พิมพ์โค้ดภาษา Python ที่นี่..."
+                          rows={8}
+                          className="w-full bg-slate-950 text-slate-100 font-mono text-sm p-4 rounded-xl border border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed resize-none"
+                        />
+
+                        {/* Output Console */}
+                        <div className="bg-slate-950 rounded-xl p-4 border border-slate-800 space-y-2">
+                          <div className="text-xs font-semibold text-slate-400 flex items-center justify-between">
+                            <span>ผลลัพธ์ (Terminal Output):</span>
+                            {isRunning && <span className="text-amber-400 animate-pulse">Running Python Script...</span>}
+                          </div>
+
+                          <pre className="font-mono text-sm text-emerald-400 whitespace-pre-wrap min-h-[60px] max-h-[150px] overflow-y-auto">
+                            {codeOutput || <span className="text-slate-600 italic">กดปุ่ม "รันโค้ด (Run)" เพื่อดูผลลัพธ์ที่นี่</span>}
+                          </pre>
+                        </div>
+
+                        {/* Test Result Indicator */}
+                        {testResult && (
+                          <div className={`p-3.5 rounded-xl text-sm border flex items-start gap-2.5 ${
+                            testResult.success 
+                              ? 'bg-emerald-950/60 border-emerald-600/50 text-emerald-300' 
+                              : 'bg-rose-950/60 border-rose-600/50 text-rose-300'
+                          }`}>
+                            {testResult.success ? <IconCheckCircle /> : <IconXCircle />}
+                            <div className="whitespace-pre-line leading-relaxed">{testResult.message}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TEACHER DASHBOARD */}
+                {}
+                {currentRole === 'teacher' && (
+                  <div className="space-y-6">
+                    
+                    {/* Header Controls */}
+                    <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between bg-slate-800/60 border border-slate-700/60 p-5 rounded-2xl">
+                      <div>
+                        <h2 className="text-xl font-bold text-white">แดชบอร์ดผู้สอน (Teacher Control)</h2>
+                        <p className="text-sm text-slate-400">ติดตามความก้าวหน้า จัดการข้อมูลนักเรียน และเชื่อมต่อ Google Sheets</p>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          onClick={() => setShowGasModal(true)}
+                          className="bg-emerald-600/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-600/30 text-xs px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition font-medium"
+                        >
+                          <IconSettings />
+                          {gasUrl ? 'ตั้งค่า Google Sheets (เชื่อมต่อแล้ว)' : 'เชื่อมต่อ Google Sheets Realtime'}
+                        </button>
+
+                        <button
+                          onClick={() => setShowBulkModal(true)}
+                          className="bg-sky-600 hover:bg-sky-500 text-white text-xs px-3.5 py-2.5 rounded-xl font-medium flex items-center gap-1.5 transition shadow"
+                        >
+                          <IconUpload />
+                          นำเข้าข้อมูลหลายคน (Bulk Import)
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setEditingStudent(null);
+                            setStudentFormData({ id: '', name: '', room: 'ม.1/1', number: '' });
+                            setShowStudentModal(true);
+                          }}
+                          className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3.5 py-2.5 rounded-xl font-medium flex items-center gap-1.5 transition shadow"
+                        >
+                          <IconPlus />
+                          เพิ่มนักเรียนรายคน
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Stats Summary Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div className="bg-slate-800/60 border border-slate-700/60 p-5 rounded-2xl">
+                        <div className="text-xs text-slate-400 mb-1">จำนวนนักเรียนทั้งหมด</div>
+                        <div className="text-2xl font-bold text-white">{students.length} คน</div>
+                      </div>
+
+                      <div className="bg-slate-800/60 border border-slate-700/60 p-5 rounded-2xl">
+                        <div className="text-xs text-slate-400 mb-1">การส่งงานทั้งหมด</div>
+                        <div className="text-2xl font-bold text-indigo-400">{submissions.length} ครั้ง</div>
+                      </div>
+
+                      <div className="bg-slate-800/60 border border-slate-700/60 p-5 rounded-2xl">
+                        <div className="text-xs text-slate-400 mb-1">สถานะ Google Sheets Sync</div>
+                        <div className={`text-sm font-semibold mt-1 flex items-center gap-1.5 ${gasUrl ? 'text-emerald-400' : 'text-amber-400'}`}>
+                          <span className={`w-2.5 h-2.5 rounded-full ${gasUrl ? 'bg-emerald-400' : 'bg-amber-400'}`}></span>
+                          {gasUrl ? 'Real-time Sync Active' : 'ยังไม่ได้เชื่อมต่อ'}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Filters & Search */}
+                    <div className="bg-slate-800/60 border border-slate-700/60 p-4 rounded-2xl flex flex-col sm:flex-row gap-3 justify-between items-center">
+                      <div className="flex items-center gap-2 w-full sm:w-auto">
+                        <IconFilter />
+                        <span className="text-xs font-semibold text-slate-300">กรองตามห้องเรียน:</span>
+                        <select
+                          value={selectedRoomFilter}
+                          onChange={(e) => setSelectedRoomFilter(e.target.value)}
+                          className="bg-slate-900 border border-slate-700 rounded-lg text-xs px-3 py-1.5 text-white focus:outline-none"
+                        >
+                          <option value="ALL">ทุกห้องเรียน</option>
+                          {roomList.map((room) => (
+                            <option key={room} value={room}>{room}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="relative w-full sm:w-64">
+                        <div className="absolute left-3 top-2.5">
+                          <IconSearch />
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="ค้นหาตามชื่อ หรือรหัส..."
+                          value={searchStudentTerm}
+                          onChange={(e) => setSearchStudentTerm(e.target.value)}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-lg text-xs pl-9 pr-3 py-2 text-white focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Student Table */}
+                    {}
+                    <div className="bg-slate-800/60 border border-slate-700/60 rounded-2xl overflow-hidden shadow-xl">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left text-sm text-slate-300">
+                          <thead className="bg-slate-900/80 text-xs font-semibold uppercase text-slate-400 border-b border-slate-700">
+                            <tr>
+                              <th className="p-4">รหัสประจำตัว</th>
+                              <th className="p-4">ชื่อ - นามสกุล</th>
+                              <th className="p-4">ห้องเรียน</th>
+                              <th className="p-4">เลขที่</th>
+                              <th className="p-4">แบบฝึกหัดที่ผ่าน</th>
+                              <th className="p-4 text-center">จัดการข้อมูล</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-slate-800">
+                            {filteredStudents.length > 0 ? (
+                              filteredStudents.map((s) => {
+                                const passedCount = submissions.filter(sub => sub.studentId === s.id && sub.status === 'ผ่าน').length;
+
+                                return (
+                                  <tr key={s.id} className="hover:bg-slate-800/40 transition">
+                                    <td className="p-4 font-mono font-medium text-emerald-400">{s.id}</td>
+                                    <td className="p-4 font-medium text-white">{s.name}</td>
+                                    <td className="p-4">{s.room}</td>
+                                    <td className="p-4">{s.number}</td>
+                                    <td className="p-4">
+                                      <span className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-md text-xs font-semibold">
+                                        {passedCount} / {PYTHON_LESSONS.length} บท
+                                      </span>
+                                    </td>
+                                    <td className="p-4 text-center">
+                                      <div className="flex items-center justify-center gap-2">
+                                        <button
+                                          onClick={() => {
+                                            setEditingStudent(s);
+                                            setStudentFormData({ ...s });
+                                            setShowStudentModal(true);
+                                          }}
+                                          className="p-1.5 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-sky-400 transition"
+                                          title="แก้ไข"
+                                        >
+                                          <IconEdit />
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeleteStudent(s.id)}
+                                          className="p-1.5 hover:bg-slate-700 rounded-lg text-slate-400 hover:text-rose-400 transition"
+                                          title="ลบ"
+                                        >
+                                          <IconTrash />
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                            ) : (
+                              <tr>
+                                <td colSpan={6} className="p-8 text-center text-slate-500 text-sm">
+                                  ไม่พบข้อมูลนักเรียน
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </main>
+
+              {/* TEACHER PIN LOGIN MODAL */}
+              {}
+              {showPinModal && (
+                <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                  <div className="bg-slate-800 border border-slate-700 rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl">
+                    <div className="text-center">
+                      <div className="w-12 h-12 bg-amber-500/10 text-amber-400 rounded-xl flex items-center justify-center mx-auto mb-2 border border-amber-500/20">
+                        <IconLock />
+                      </div>
+                      <h3 className="text-lg font-bold text-white">ยืนยันตัวตนผู้สอน</h3>
+                      <p className="text-xs text-slate-400 mt-1">กรอกรหัสผ่านสำหรับเข้าใช้งานแดชบอร์ดผู้สอน</p>
+                    </div>
+
+                    <form onSubmit={handleTeacherPinSubmit} className="space-y-4">
+                      <div>
+                        <input
+                          type="password"
+                          value={teacherPinInput}
+                          onChange={(e) => setTeacherPinInput(e.target.value)}
+                          placeholder="กรอกรหัสผ่านผู้สอน"
+                          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-center text-xl tracking-widest text-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono"
+                          autoFocus
+                          required
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => { setShowPinModal(false); setTeacherPinInput(''); }}
+                          className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white transition"
+                        >
+                          ยกเลิก
+                        </button>
+                        <button
+                          type="submit"
+                          className="bg-amber-600 hover:bg-amber-500 text-slate-950 font-semibold px-4 py-2 rounded-xl text-xs transition shadow"
+                        >
+                          เข้าสู่ระบบ
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              )}
+
+              {/* BULK STUDENT IMPORT MODAL */}
+              {showBulkModal && (
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                  <div className="bg-slate-800 border border-slate-700 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <IconUpload />
+                      นำเข้าข้อมูลนักเรียนทีละหลายคน (Bulk Import)
+                    </h3>
+
+                    <div className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700 text-xs text-slate-300 space-y-1">
+                      <p className="font-semibold text-sky-400">รูปแบบการกรอกข้อมูล (1 คน ต่อ 1 บรรทัด):</p>
+                      <p className="font-mono text-slate-400">เลขประจำตัว, ชื่อ, นามสกุล, ห้องเรียน, เลขที่</p>
+                      <p className="text-slate-400 italic">ตัวอย่าง:</p>
+                      <p className="font-mono text-emerald-400">10007, สมชาย, ใจดี, ม.1/1, 4<br/>10008, สุภาพร, มีสุข, ม.1/1, 5</p>
+                    </div>
+
+                    <div>
+                      <textarea
+                        rows={8}
+                        value={bulkInputText}
+                        onChange={(e) => setBulkInputText(e.target.value)}
+                        placeholder="วางข้อมูลนักเรียนที่นี่..."
+                        className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3.5 text-xs text-slate-100 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none leading-relaxed"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-2">
+                      <button
+                        onClick={() => setShowBulkModal(false)}
+                        className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white transition"
+                      >
+                        ยกเลิก
+                      </button>
+                      <button
+                        onClick={handleBulkImport}
+                        className="bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-xl text-xs font-medium shadow transition"
+                      >
+                        นำเข้าข้อมูล
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* STUDENT ADD/EDIT MODAL */}
+              {showStudentModal && (
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                  <div className="bg-slate-800 border border-slate-700 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+                    <h3 className="text-lg font-bold text-white">
+                      {editingStudent ? 'แก้ไขข้อมูลนักเรียน' : 'เพิ่มนักเรียนใหม่'}
+                    </h3>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs text-slate-400 mb-1">รหัสประจำตัวนักเรียน (5 หลัก)</label>
+                        <input
+                          type="text"
+                          maxLength={5}
+                          value={studentFormData.id}
+                          disabled={!!editingStudent}
+                          onChange={(e) => setStudentFormData({ ...studentFormData, id: e.target.value.replace(/\D/g, '') })}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50"
+                          placeholder="เช่น 10007"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs text-slate-400 mb-1">ชื่อ - นามสกุล</label>
+                        <input
+                          type="text"
+                          value={studentFormData.name}
+                          onChange={(e) => setStudentFormData({ ...studentFormData, name: e.target.value })}
+                          className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          placeholder="เช่น เด็กชายสมชาย ใจดี"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-slate-400 mb-1">ห้องเรียน</label>
+                          <input
+                            type="text"
+                            value={studentFormData.room}
+                            onChange={(e) => setStudentFormData({ ...studentFormData, room: e.target.value })}
+                            className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="เช่น ม.1/1"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs text-slate-400 mb-1">เลขที่</label>
+                          <input
+                            type="number"
+                            value={studentFormData.number}
+                            onChange={(e) => setStudentFormData({ ...studentFormData, number: e.target.value })}
+                            className="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="เช่น 1"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-2">
+                      <button
+                        onClick={() => setShowStudentModal(false)}
+                        className="px-4 py-2 text-xs font-medium text-slate-400 hover:text-white transition"
+                      >
+                        ยกเลิก
+                      </button>
+                      <button
+                        onClick={handleSaveStudent}
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-medium shadow transition"
+                      >
+                        บันทึกข้อมูล
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* GOOGLE SHEETS URL SETTINGS MODAL */}
+              {showGasModal && (
+                <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                  <div className="bg-slate-800 border border-slate-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <IconSettings />
+                      ตั้งค่าเชื่อมต่อ Google Sheets แบบ Real-time
+                    </h3>
+
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      กรอก Web App URL จาก Google Apps Script เพื่อบันทึกผลการทำแบบฝึกหัดของนักเรียนเข้าสู่ Google Sheet โดยอัตโนมัติทันที
+                    </p>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">Google Apps Script Web App URL:</label>
+                      <input
+                        type="url"
+                        value={gasUrl}
+                        onChange={(e) => setGasUrl(e.target.value)}
+                        placeholder="https://script.google.com/macros/s/.../exec"
+                        className="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-emerald-400 font-mono focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+
+                    <div className="bg-slate-900/80 p-3.5 rounded-xl border border-slate-700 text-xs text-slate-400 space-y-2">
+                      <p className="font-semibold text-slate-200">วิธีสร้าง Web App URL ใน Google Sheet:</p>
+                      <ol className="list-decimal list-inside space-y-1">
+                        <li>เปิด Google Sheet ของครูผู้สอน</li>
+                        <li>ไปที่ <span className="text-indigo-300">ส่วนขยาย (Extensions) &gt; Apps Script</span></li>
+                        <li>วางโค้ด `postData.gs`</li>
+                        <li>กด <span className="text-indigo-300">Deploy &gt; New deployment &gt; Select type: Web App</span></li>
+                        <li>ตั้งค่า Access เป็น <span className="text-indigo-300">"Anyone"</span> แล้วนำ URL มาวางที่นี่</li>
+                      </ol>
+                    </div>
+
+                    <div className="flex items-center justify-end gap-2 pt-2">
+                      <button
+                        onClick={() => setShowGasModal(false)}
+                        className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl text-xs font-medium transition shadow"
+                      >
+                        เสร็จสิ้น / บันทึก URL
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
